@@ -126,3 +126,36 @@ Crea AGENTS.md como enlace simbólico a CLAUDE.md (ln -s CLAUDE.md AGENTS.md o e
 ```
 
 **Qué salió:** `AGENTS.md` → `CLAUDE.md`.
+
+## Prompt 9
+
+**Modelo:** Opus 5.5 (Claude Max)
+**Herramienta:** Claude Code
+
+```
+/priority-ticket
+```
+
+**Qué salió:** encontró LA-1, detectó huecos (`passwordConfirmation`, token, stack frontend), entró en plan mode, preguntó Token/Router/Post-signup/Alcance y escribió el plan. No se aplicó.
+
+## Prompt 10
+
+**Modelo:** Opus 5.5 (Claude Max)
+**Herramienta:** Claude Code (en `flowsync-sin-harness`)
+
+```
+/priority-ticket
+```
+
+**Qué salió:** `Unknown command: /priority-ticket` (esperado: la copia pelada no tiene la skill).
+
+## Prompt 11
+
+**Modelo:** Opus 5.5 (Claude Max)
+**Herramienta:** Claude Code (en `flowsync-sin-harness`)
+
+```
+Trae el ticket de mayor prioridad asignado a mí en «Por hacer» del proyecto LA (LIDR - Academy). Resume sus criterios de aceptación, entra en plan mode y propone cómo implementarlo. No implementes ni edites código.
+```
+
+**Qué salió:** plan de LA-1 con arquitectura features/shared, logout, proxy Vite, RHF/zod y Vitest+MSW. No se aplicó.
