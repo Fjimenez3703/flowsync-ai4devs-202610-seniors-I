@@ -16,7 +16,7 @@ El sistema SHALL permitir crear una cuenta nueva indicando email, contraseña y 
 #### Scenario: nombre vacío
 
 - **WHEN** una persona se registra dejando el nombre en blanco
-- **THEN** la cuenta se crea igual y el nombre queda vacío
+- **THEN** la cuenta se crea igual y, en el perfil, aparece el texto “Sin nombre” en lugar de un nombre propio
 
 ### Requirement: Validación al registrarse
 
@@ -37,6 +37,11 @@ El sistema SHALL rechazar el registro cuando el email no es válido, cuando ya e
 - **WHEN** la contraseña tiene menos de 8 caracteres
 - **THEN** el sistema rechaza el registro
 
+#### Scenario: contraseña demasiado larga
+
+- **WHEN** la contraseña tiene más de 32 caracteres
+- **THEN** el sistema rechaza el registro
+
 ### Requirement: Inicio de sesión
 
 El sistema SHALL permitir entrar con email y contraseña correctos, devolviendo los datos de la persona y un token de acceso.
@@ -53,7 +58,7 @@ El sistema SHALL permitir entrar con email y contraseña correctos, devolviendo 
 
 ### Requirement: Perfil de la persona autenticada
 
-El sistema SHALL exponer el perfil de la persona que tiene sesión válida, con identificador, nombre, email, fechas e iniciales visibles. Sin sesión válida, el perfil SHALL quedar inaccesible.
+El sistema SHALL exponer el perfil de la persona que tiene sesión válida, con identificador, nombre, email, fecha de alta e iniciales visibles. Sin sesión válida, el perfil SHALL quedar inaccesible.
 
 #### Scenario: pedir el perfil con sesión
 
@@ -105,7 +110,12 @@ El sistema SHALL exigir sesión válida para ver el perfil en la interfaz. Sin s
 #### Scenario: token guardado ya no vale
 
 - **WHEN** la persona recarga con un token guardado que el servidor rechaza
-- **THEN** pierde la sesión local y puede volver a iniciar sesión; se le explica por qué
+- **THEN** pierde la sesión local, se borra el token guardado y puede volver a iniciar sesión; se le explica por qué
+
+#### Scenario: token guardado y servidor inaccesible
+
+- **WHEN** la persona recarga con un token guardado pero no se puede hablar con el servidor
+- **THEN** queda como sin sesión y ve un aviso de conexión, pero el token sigue guardado (si el servidor vuelve y recarga, puede recuperar la sesión)
 
 ### Requirement: Pantalla de perfil y salida
 
@@ -123,7 +133,7 @@ En el perfil, el sistema SHALL mostrar el nombre (o un texto de “sin nombre”
 
 ### Requirement: Mensajes de error comprensibles
 
-Los fallos de validación, de credenciales, de sesión caducada o de conexión SHALL mostrarse en castellano de forma usable en la interfaz.
+Los fallos de validación, de credenciales, de sesión no válida o de conexión SHALL mostrarse en castellano de forma usable en la interfaz.
 
 #### Scenario: error de validación en registro
 
@@ -155,7 +165,7 @@ Cualquier ruta desconocida SHALL llevar al perfil (y de ahí, si no hay sesión,
 
 ### 2. Incoherencias
 
-- Al registrarse la contraseña exige entre 8 y 32 caracteres; al iniciar sesión la API acepta cualquier string como contraseña (solo valida el email). Se ve en las reglas de validación de signup frente a las de login.
+- Al registrarse la contraseña exige entre 8 y 32 caracteres; al iniciar sesión la API solo exige que la contraseña sea un string no vacío (sin rango de longitud). Se ve en las reglas de validación de signup frente a las de login.
 - Casi todas las respuestas de la API van envueltas en `{ data: ... }`, pero el logout responde con `{ message: ... }` suelto, sin ese envoltorio.
 - Si al arrancar el backend no responde, la UI te deja como anónimo y enseña un error de sesión, pero el token sigue en el almacenamiento local (no se borra como cuando el servidor responde 401).
 
