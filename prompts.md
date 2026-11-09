@@ -20,7 +20,7 @@ distinto, y sin este archivo no se distinguen.
 
 ## Prompt 1
 
-**Modelo:** Composer
+**Modelo:** Auto
 **Herramienta:** Cursor
 
 ```
@@ -35,7 +35,7 @@ y el titulo de cada uno, no mires los tests todavía
 
 ## Prompt 2
 
-**Modelo:** Composer
+**Modelo:** Auto
 **Herramienta:** Cursor
 
 ```
@@ -53,7 +53,7 @@ dilo
 
 ## Prompt 3
 
-**Modelo:** Composer
+**Modelo:** Auto
 **Herramienta:** Cursor
 
 ```
@@ -67,7 +67,7 @@ abre el test y dime exactamente que endpoint pega
 
 ## Prompt 4
 
-**Modelo:** Composer
+**Modelo:** Auto
 **Herramienta:** Cursor
 
 ```
@@ -81,7 +81,7 @@ y el show usan lo mismo. no arregles nada, solo dime
 
 ## Prompt 5
 
-**Modelo:** Composer
+**Modelo:** Auto
 **Herramienta:** Cursor
 
 ```
@@ -93,17 +93,18 @@ importante:
 - si salen en rojo se quedan en rojo
 - el de "no filtra email" tiene que mirar lista Y tarea suelta
 - el de sin nombre: fullName null e iniciales presentes, sin inventarme el valor exacto
+- nombre e iniciales compruebalos en GET (lista y suelta), no solo en el POST
 
 despues los lanzas
 ```
 
-**Qué salió:** escribió assignee.spec.ts y los corrió. el del email falla en la lista, los otros pasan.
+**Qué salió:** el del email falla en lista y en el POST de creación. show va bien. los otros pasan.
 
 ---
 
 ## Prompt 6
 
-**Modelo:** Composer
+**Modelo:** Auto
 **Herramienta:** Cursor
 
 ```

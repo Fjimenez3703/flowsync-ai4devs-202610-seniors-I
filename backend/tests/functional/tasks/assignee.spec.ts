@@ -12,7 +12,7 @@ test.group('Tasks | responsable en la tarea', (group) => {
   group.each.setup(() => testUtils.db().withGlobalTransaction())
 
   async function sesion(client: any, attrs: { fullName: string | null; email: string }) {
-    const user = await User.create({
+    await User.create({
       fullName: attrs.fullName,
       email: attrs.email,
       password: 'secreto123',
@@ -22,7 +22,7 @@ test.group('Tasks | responsable en la tarea', (group) => {
       password: 'secreto123',
     })
     login.assertStatus(200)
-    return { user, token: login.body().data.token as string }
+    return { token: login.body().data.token as string }
   }
 
   test('el assignee trae nombre e iniciales del responsable', async ({ client, assert }) => {
@@ -37,10 +37,24 @@ test.group('Tasks | responsable en la tarea', (group) => {
       .json({ title: 'Revisar el informe' })
 
     created.assertStatus(201)
+    const taskId = created.body().data.id
 
-    const assignee = created.body().data.assignee
-    assert.equal(assignee.fullName, 'Ada Lovelace')
-    assert.equal(assignee.initials, 'AL')
+    const list = await client.get('/api/v1/tasks').header('Authorization', `Bearer ${token}`)
+    list.assertStatus(200)
+
+    const fromList = list.body().data.find((t: { id: number }) => t.id === taskId)
+    assert.exists(fromList)
+    assert.equal(fromList.assignee.fullName, 'Ada Lovelace')
+    assert.equal(fromList.assignee.initials, 'AL')
+
+    const show = await client
+      .get(`/api/v1/tasks/${taskId}`)
+      .header('Authorization', `Bearer ${token}`)
+      .qs({ today: '2026-11-09' })
+
+    show.assertStatus(200)
+    assert.equal(show.body().data.assignee.fullName, 'Ada Lovelace')
+    assert.equal(show.body().data.assignee.initials, 'AL')
   })
 
   test('el assignee no incluye el email ni en la lista ni en la tarea suelta', async ({
@@ -59,6 +73,10 @@ test.group('Tasks | responsable en la tarea', (group) => {
 
     created.assertStatus(201)
     const taskId = created.body().data.id
+
+    // La creación también serializa la tarea: el email no debería colarse ahí.
+    assert.notProperty(created.body().data.assignee, 'email')
+    assert.notInclude(JSON.stringify(created.body().data.assignee), 'ada@example.com')
 
     const list = await client.get('/api/v1/tasks').header('Authorization', `Bearer ${token}`)
     list.assertStatus(200)
@@ -93,10 +111,25 @@ test.group('Tasks | responsable en la tarea', (group) => {
       .json({ title: 'Apuntar algo' })
 
     created.assertStatus(201)
+    const taskId = created.body().data.id
 
-    const assignee = created.body().data.assignee
-    assert.isNull(assignee.fullName)
-    assert.isString(assignee.initials)
-    assert.isNotEmpty(assignee.initials)
+    const list = await client.get('/api/v1/tasks').header('Authorization', `Bearer ${token}`)
+    list.assertStatus(200)
+
+    const fromList = list.body().data.find((t: { id: number }) => t.id === taskId)
+    assert.exists(fromList)
+    assert.isNull(fromList.assignee.fullName)
+    assert.isString(fromList.assignee.initials)
+    assert.isNotEmpty(fromList.assignee.initials)
+
+    const show = await client
+      .get(`/api/v1/tasks/${taskId}`)
+      .header('Authorization', `Bearer ${token}`)
+      .qs({ today: '2026-11-09' })
+
+    show.assertStatus(200)
+    assert.isNull(show.body().data.assignee.fullName)
+    assert.isString(show.body().data.assignee.initials)
+    assert.isNotEmpty(show.body().data.assignee.initials)
   })
 })
