@@ -16,20 +16,106 @@ distinto, y sin este archivo no se distinguen.
 - Incluye también los que **no funcionaron**. Suelen ser los más útiles de leer.
 - `Modelo` y `Herramienta` en todos. Si cambiaste de una a otra a mitad, se nota aquí.
 
-Borra el ejemplo de abajo cuando escribas el primero.
-
 ---
 
 ## Prompt 1
 
-**Modelo:** Opus 1M xHigh
-**Herramienta:** Claude Code
+**Modelo:** Composer
+**Herramienta:** Cursor
 
 ```
-Este es el ejemplo. Bórralo.
-
-El prompt va aquí dentro, entero y con sus saltos de línea,
-para que se sepa dónde empieza y dónde acaba.
+antes de tocar nada: el requisito "Lo que cada tarea muestra de su responsable"
+de openspec/specs/tasks/spec.md, cuantos scenarios tiene? solo dime el numero
+y el titulo de cada uno, no mires los tests todavía
 ```
 
-**Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+**Qué salió:** me listó los 3 scenarios. bien.
+
+---
+
+## Prompt 2
+
+**Modelo:** Composer
+**Herramienta:** Cursor
+
+```
+ok ahora si, mira la suite de tests (backend/tests) y dime si alguno cubre
+esos 3 scenarios del responsable en la tarea. necesito rellenar la matriz:
+scenario / test que lo cubre / cubierto|no cubierto|no lo se
+
+ojo, no inventes cobertura. si un test se llama parecido pero comprueba otra cosa,
+dilo
+```
+
+**Qué salió:** dijo que no hay carpeta tasks en tests, solo auth. los de iniciales me liaron.
+
+---
+
+## Prompt 3
+
+**Modelo:** Composer
+**Herramienta:** Cursor
+
+```
+espera, initials.spec.ts no cubre lo del assignee?? usa Ada Lovelace y AL igual...
+abre el test y dime exactamente que endpoint pega
+```
+
+**Qué salió:** pega a login, no a tasks. entonces no cubre. lo dejo en "no lo se" en la matriz porque al principio dudé.
+
+---
+
+## Prompt 4
+
+**Modelo:** Composer
+**Herramienta:** Cursor
+
+```
+mira tambien el transformer del assignee y el de la lista, a ver si la lista
+y el show usan lo mismo. no arregles nada, solo dime
+```
+
+**Qué salió:** la lista usa UserTransformer (con email) y el detail usa TaskAssigneeTransformer. ahi hay un bug pero no lo toco.
+
+---
+
+## Prompt 5
+
+**Modelo:** Composer
+**Herramienta:** Cursor
+
+```
+escribe los 3 tests que faltan en backend/tests/functional/tasks/, uno por
+scenario, mismo estilo que auth (japa + withGlobalTransaction).
+
+importante:
+- NO toques codigo fuera de tests
+- si salen en rojo se quedan en rojo
+- el de "no filtra email" tiene que mirar lista Y tarea suelta
+- el de sin nombre: fullName null e iniciales presentes, sin inventarme el valor exacto
+
+despues los lanzas
+```
+
+**Qué salió:** escribió assignee.spec.ts y los corrió. el del email falla en la lista, los otros pasan.
+
+---
+
+## Prompt 6
+
+**Modelo:** Composer
+**Herramienta:** Cursor
+
+```
+montame docs/verificacion/fjf.md con la matriz en el formato de la leccion
+(2 numeros arriba + tabla) y debajo las 3 lineas de la parte B.
+
+para la parte B:
+1. antes de mirar creia 1, al final 0
+2. el scenario del que dude entre hueco de test vs hueco de spec
+3. lo de las iniciales sin nombre que tuve que decidir yo
+
+nada de florituras
+```
+
+**Qué salió:** archivo listo.
